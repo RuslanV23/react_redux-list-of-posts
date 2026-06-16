@@ -2,18 +2,20 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Post } from '../../types/Post';
 import { getUserPosts } from '../../api/posts';
 
-type PostsState =
-  | { type: 'idle' }
-  | { type: 'loading' }
-  | { type: 'success'; posts: Post[] }
-  | { type: 'failed'; error: string };
+type PostsState = {
+  loaded: boolean;
+  hasError: boolean;
+  items: Post[];
+};
 
-const initialState: PostsState = { type: 'idle' } as PostsState;
+const initialState: PostsState = {
+  loaded: false,
+  hasError: false,
+  items: [],
+};
 
 export const init = createAsyncThunk('posts/fetch', async (userId: number) => {
-  const posts = await getUserPosts(userId);
-
-  return posts;
+  return getUserPosts(userId);
 });
 
 export const postsSlice = createSlice({
@@ -22,18 +24,19 @@ export const postsSlice = createSlice({
   reducers: {},
   extraReducers: builder =>
     builder
-      .addCase(init.pending, () => {
-        // console.log('fff');
-
-        return { type: 'loading' };
-      })
-      .addCase(init.fulfilled, (_, action) => {
-        return { type: 'success', posts: action.payload };
-      })
-      .addCase(init.rejected, (_, action) => {
-        return {
-          type: 'failed',
-          error: action.error.message ?? 'Unknown error',
-        };
-      }),
+      .addCase(init.pending, () => ({
+        loaded: false,
+        hasError: false,
+        items: [],
+      }))
+      .addCase(init.fulfilled, (_, action) => ({
+        loaded: true,
+        hasError: false,
+        items: action.payload,
+      }))
+      .addCase(init.rejected, state => ({
+        ...state,
+        loaded: true,
+        hasError: true,
+      })),
 });

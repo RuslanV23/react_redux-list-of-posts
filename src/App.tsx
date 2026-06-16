@@ -38,6 +38,7 @@ export const App: React.FC = () => {
       dispatch(postsInit(author.id));
     }
   }, [author, dispatch, setSelectedPost]);
+  /* eslint-disable @typescript-eslint/indent */
 
   return (
     <main className="section">
@@ -51,9 +52,8 @@ export const App: React.FC = () => {
 
               <div className="block" data-cy="MainContent">
                 {!author && <p data-cy="NoSelectedUser">No user selected</p>}
-
-                {posts.type === 'loading' && <Loader />}
-                {posts.type === 'failed' && (
+                {author && !posts.loaded && !posts.hasError && <Loader />}
+                {posts.hasError && (
                   <div
                     className="notification is-danger"
                     data-cy="PostsLoadingError"
@@ -61,16 +61,19 @@ export const App: React.FC = () => {
                     Something went wrong!
                   </div>
                 )}
-
-                {posts.type === 'success' && posts.posts.length === 0 && (
-                  <div className="notification is-warning" data-cy="NoPostsYet">
-                    No posts yet
-                  </div>
-                )}
-
-                {posts.type === 'success' && posts.posts.length > 0 && (
+                {posts.loaded &&
+                  !posts.hasError &&
+                  posts.items.length === 0 && (
+                    <div
+                      className="notification is-warning"
+                      data-cy="NoPostsYet"
+                    >
+                      No posts yet
+                    </div>
+                  )}
+                {posts.loaded && !posts.hasError && posts.items.length > 0 && (
                   <PostsList
-                    posts={posts.posts}
+                    posts={posts.items}
                     selectedPostId={selectedPost?.id}
                     onPostSelected={setSelectedPost}
                   />

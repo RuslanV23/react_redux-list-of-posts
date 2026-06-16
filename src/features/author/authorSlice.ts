@@ -6,7 +6,7 @@ type AuthorState = User | null;
 const initialState = null as AuthorState;
 
 export const authorSlice = createSlice({
-  name: 'user',
+  name: 'author',
   initialState,
   reducers: {
     setAuthor: (_state, action: PayloadAction<AuthorState>) => {
