@@ -6,7 +6,7 @@ type SelectedPostState = Post | null;
 const initialState = null as SelectedPostState;
 
 export const selectedPostSlice = createSlice({
-  name: 'user',
+  name: 'selectedPost',
   initialState,
   reducers: {
     setSelectedPost: (_state, action: PayloadAction<SelectedPostState>) => {

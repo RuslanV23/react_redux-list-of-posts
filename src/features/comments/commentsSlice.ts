@@ -9,13 +9,13 @@ import { Comment } from '../../types/Comment';
 type CommentsState = {
   items: Comment[];
   loaded: boolean;
-  hasError: string | null;
+  hasError: boolean;
 };
 
 const initialState: CommentsState = {
   items: [],
   loaded: false,
-  hasError: null,
+  hasError: false,
 } as CommentsState;
 
 export const init = createAsyncThunk(
@@ -67,35 +67,35 @@ export const commentsSlice = createSlice({
       .addCase(init.pending, state => ({
         ...state,
         loaded: false,
-        hasError: null,
+        hasError: false,
       }))
       .addCase(init.fulfilled, (state, action) => ({
         ...state,
         loaded: true,
         items: action.payload,
       }))
-      .addCase(init.rejected, (state, action) => ({
+      .addCase(init.rejected, state => ({
         ...state,
         loaded: true,
-        hasError: action.error.message ?? 'Unknown error',
+        hasError: true,
       }))
 
-      .addCase(addComment.pending, state => ({ ...state, hasError: null }))
+      .addCase(addComment.pending, state => ({ ...state, hasError: false }))
       .addCase(addComment.fulfilled, (state, action) => {
         state.items.push(action.payload);
       })
-      .addCase(addComment.rejected, (state, action) => ({
+      .addCase(addComment.rejected, state => ({
         ...state,
-        hasError: action.error.message ?? 'Could not add comment',
+        hasError: true,
       }))
 
       .addCase(removeComment.fulfilled, (state, action) => ({
         ...state,
         items: state.items.filter(comment => comment.id !== action.payload),
       }))
-      .addCase(removeComment.rejected, (state, action) => ({
+      .addCase(removeComment.rejected, state => ({
         ...state,
-        hasError: action.error.message ?? 'Could not delete comment',
+        hasError: true,
       })),
 });
 
